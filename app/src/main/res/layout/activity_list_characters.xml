@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Campo de entrada para o ID -->
+    <EditText
+        android:id="@+id/etCharacterId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Digite o ID do personagem"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:inputType="text" />
+
+    <!-- Botão para buscar -->
+    <Button
+        android:id="@+id/btnFetchCharacter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:onClick="onClickFetchCharacter"
+        android:text="Buscar Personagem" />
+
+    <!-- TextView para exibir os detalhes do personagem -->
+    <TextView
+        android:id="@+id/tvCharacterDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:text="Detalhes do personagem aparecerão aqui"
+        android:textStyle="italic" />
+
+    <!-- RecyclerView para exibir a lista de personagens -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCharacters"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>

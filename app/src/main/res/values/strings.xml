@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mob2-HP</string>
+    <string name="character_image" />
 </resources>

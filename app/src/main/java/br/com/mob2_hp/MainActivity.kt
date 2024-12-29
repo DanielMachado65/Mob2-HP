@@ -1,47 +1,43 @@
 package br.com.mob2_hp
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import br.com.mob2_hp.ui.theme.Mob2HPTheme
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            Mob2HPTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        setContentView(R.layout.activity_main)
+
+        // Botão para Listar Personagem por ID
+        val btnListCharacter: Button = findViewById(R.id.btnListCharacter)
+        btnListCharacter.setOnClickListener {
+            val intent = Intent(this, ListCharactersActivity::class.java)
+            startActivity(intent)
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        // Botão para Listar Professores
+        val btnListProfessors: Button = findViewById(R.id.btnListProfessors)
+        btnListProfessors.setOnClickListener {
+            val intent = Intent(this, ListProfessorsActivity::class.java)
+            startActivity(intent)
+        }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Mob2HPTheme {
-        Greeting("Android")
+        // Botão para Listar Estudantes por Casa
+        val btnListStudents: Button = findViewById(R.id.btnListStudents)
+        btnListStudents.setOnClickListener {
+            val intent = Intent(this, ListStudentsActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Botão para Sair
+        val btnExit: Button = findViewById(R.id.btnExit)
+        btnExit.setOnClickListener {
+            finish()
+        }
     }
 }
