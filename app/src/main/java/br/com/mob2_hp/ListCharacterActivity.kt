@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -32,15 +34,18 @@ class ListCharactersActivity : AppCompatActivity() {
 
     fun onClickFetchCharacter(view: View) {
         val etCharacterId = findViewById<EditText>(R.id.etCharacterId)
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
         val id = etCharacterId.text.toString().trim()
         if (id.isNotEmpty()) {
+            progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
-                    val response = ApiClient.service.getCharacter(id) // Agora retorna uma lista
+                    val response = ApiClient.service.getCharacter(id)
                     withContext(Dispatchers.Main) {
+                        progressBar.visibility = View.GONE
                         if (response.isNotEmpty()) {
-                            val character = response[0] // Pega o primeiro elemento
+                            val character = response[0]
                             startActivity(
                                 Intent(this@ListCharactersActivity, CharacterProfileActivity::class.java).apply {
                                     putExtra("name", character.name)
@@ -55,7 +60,7 @@ class ListCharactersActivity : AppCompatActivity() {
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        Log.e("onClickFetchCharacter", "Erro ao buscar personagem", e)
+                        progressBar.visibility = View.GONE
                         Toast.makeText(this@ListCharactersActivity, "Erro ao buscar personagem. Verifique o ID.", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -65,26 +70,49 @@ class ListCharactersActivity : AppCompatActivity() {
         }
     }
 
+
     private fun fetchAllCharacters(recyclerView: RecyclerView) {
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        val emptyMessage = findViewById<TextView>(R.id.tvEmptyMessage)
+
+        // Exibir o loader e esconder outras views
+        progressBar.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        emptyMessage.visibility = View.GONE
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val response = ApiClient.service.getAllCharacters()
                 withContext(Dispatchers.Main) {
-                    recyclerView.adapter = CharactersAdapter(response) { character ->
-                        // Redirecionar para CharacterProfileActivity
-                        Log.d("API", character.toString());
-                        val intent = Intent(this@ListCharactersActivity, CharacterProfileActivity::class.java)
-                        intent.putExtra("name", character.name)
-                        intent.putExtra("house", character.house)
-                        intent.putExtra("actor", character.actor)
-                        intent.putExtra("image", character.image)
-                        startActivity(intent)
+                    progressBar.visibility = View.GONE
+
+                    if (response.isNotEmpty()) {
+                        emptyMessage.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                        recyclerView.adapter = CharactersAdapter(response) { character ->
+                            // Redirecionar para CharacterProfileActivity
+                            val intent = Intent(this@ListCharactersActivity, CharacterProfileActivity::class.java)
+                            intent.putExtra("name", character.name)
+                            intent.putExtra("house", character.house)
+                            intent.putExtra("actor", character.actor)
+                            intent.putExtra("image", character.image)
+                            startActivity(intent)
+                        }
+                    } else {
+                        recyclerView.visibility = View.GONE
+                        emptyMessage.visibility = View.VISIBLE
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
+                    emptyMessage.text = "Erro ao carregar personagens."
+                    emptyMessage.visibility = View.VISIBLE
+                    recyclerView.visibility = View.GONE
+                }
             }
         }
     }
+
 
 }
