@@ -1,8 +1,11 @@
 package br.com.mob2_hp
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -42,15 +45,32 @@ class ListStudentsActivity : AppCompatActivity() {
     }
 
     private fun fetchStudents(house: String, recyclerView: RecyclerView) {
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        val emptyMessage = findViewById<TextView>(R.id.tvEmptyMessage)
+
+        progressBar.visibility = View.VISIBLE
+        emptyMessage.visibility = View.GONE
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val response = ApiClient.service.getStudents(house)
                 withContext(Dispatchers.Main) {
-                    recyclerView.adapter = StudentsAdapter(response)
+                    progressBar.visibility = View.GONE
+                    if (response.isNotEmpty()) {
+                        emptyMessage.visibility = View.GONE
+                        recyclerView.adapter = StudentsAdapter(response)
+                    } else {
+                        emptyMessage.visibility = View.VISIBLE
+                    }
                 }
             } catch (e: Exception) {
-                // Tratar erros se necessário
+                withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
+                    emptyMessage.text = "Erro ao carregar dados."
+                    emptyMessage.visibility = View.VISIBLE
+                }
             }
         }
     }
+
 }

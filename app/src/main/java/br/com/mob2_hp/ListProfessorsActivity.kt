@@ -2,6 +2,8 @@ package br.com.mob2_hp
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -34,6 +36,9 @@ class ListProfessorsActivity : AppCompatActivity() {
     }
 
     private fun fetchProfessors() {
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        progressBar.visibility = View.VISIBLE
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val response = ApiClient.service.getStaff()
@@ -43,18 +48,22 @@ class ListProfessorsActivity : AppCompatActivity() {
                 response.forEach { Log.d("API_RESPONSE", "Professor: ${it.name}") }
 
                 withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
                     if (response.isNotEmpty()) {
                         adapter.updateData(response)
                     } else {
-                        adapter.updateData(emptyList()) // Lista vazia
+                        // Se a lista estiver vazia, exibir algo opcionalmente
+                        adapter.updateData(emptyList())
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
                     Log.e("API_ERROR", "Erro ao buscar professores", e)
                     adapter.updateData(emptyList()) // Lista vazia em caso de erro
                 }
             }
         }
     }
+
 }
